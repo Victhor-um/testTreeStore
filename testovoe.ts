@@ -1,12 +1,14 @@
-interface Item {
+export interface Item {
   id: number | string;
   parent: number | string | null;
   [key: string]: any;
 }
 
-class TreeStore {
+export class TreeStore {
   private flatItems: Map<number | string, Item>;
   private children: Map<number | string | null, Item[]>;
+  private allChildrenCache: Map<number | string, Item[]> = new Map();
+  private allParentsCache: Map<number | string, Item[]> = new Map();
 
   constructor(items: Item[]) {
     this.flatItems = new Map();
@@ -30,11 +32,11 @@ class TreeStore {
           `Item parent must be a number, a string or null, got ${typeof parent}`
         );
       }
-
-      this.flatItems.set(id, item);
+      const copyItem = structuredClone(item);
+      this.flatItems.set(id, copyItem);
 
       const children = this.children.get(parent) || [];
-      children.push(item);
+      children.push(copyItem);
       this.children.set(parent, children);
     });
   }
@@ -57,17 +59,28 @@ class TreeStore {
   }
 
   public getAllChildren(id: number | string): Item[] {
+    const cachedResult = this.allChildrenCache.get(id);
+    if (cachedResult) {
+      return cachedResult;
+    }
+
     const children = this.getChildren(id);
     const result = [...children];
 
     for (const child of children) {
       result.push(...this.getAllChildren(child.id));
     }
+    this.allChildrenCache.set(id, result);
 
     return result;
   }
 
   public getAllParents(id: number | string): Item[] {
+    const cachedResult = this.allParentsCache.get(id);
+    if (cachedResult) {
+      return cachedResult;
+    }
+
     const parents = [];
     let item = this.getItem(id);
 
@@ -78,11 +91,12 @@ class TreeStore {
       }
       item = parent;
     }
+    this.allParentsCache.set(id, parents);
 
     return parents;
   }
 }
-
+/* 
 const items: Item[] = [
   { id: 1, parent: 'root', type: null },
   { id: 2, parent: 1, type: 'test' },
@@ -110,3 +124,4 @@ console.log(allChildren2); // should output [{ id: 4, parent: 2, type: ‘test�
 
 const allParents4 = ts.getAllParents(4);
 console.log(allParents4); // should output [{ id: 4, parent: 2, type: ‘test’ }, { id: 2, parent: 1, type: ‘test’ }, { id: 1, parent: ‘root’ }]
+ */
