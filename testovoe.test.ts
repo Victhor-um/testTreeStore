@@ -61,26 +61,3 @@ describe('TreeStore', () => {
     });
   });
 });
-// describe('TreeStore', () => {
-//   let store: TreeStore;
-
-//   beforeEach(() => {
-//     const exampleData: Item[] = [
-//       { id: 1, parent: null, name: 'Item 1' },
-//       { id: 2, parent: 1, name: 'Item 2' },
-//       { id: 3, parent: 1, name: 'Item 3' },
-//       { id: 4, parent: 2, name: 'Item 4' },
-//     ];
-
-//     store = new TreeStore(exampleData);
-//   });
-
-//   describe('constructor', () => {
-//     it('should throw a TypeError if an item has an invalid "id" value', () => {
-//       const invalidId = { id: 'invalid', parent: null, name: 'Invalid Item' };
-//       expect(() => new TreeStore([...store.getAll(), invalidId])).toThrow(
-//         `Invalid item: {id: invalid, parent: null, name: Invalid Item}`
-//       );
-//     });
-//   });
-// });
